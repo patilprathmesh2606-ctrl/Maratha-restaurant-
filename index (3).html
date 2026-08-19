@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marath — Digital Menu</title>
+<meta name="description" content="Marath restaurant digital menu — order straight from your table.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name" id="restaurantName">Marath</div>
+        <div class="brand-tagline" id="restaurantTagline">Kitchen ticket to table</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="status-pill" id="statusPill">Open now</span>
+      <button class="cart-btn" id="openCartBtn" aria-label="Open cart">
+        🧺 Cart <span class="count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow">Table-side ordering</p>
+    <h1>Order like the kitchen already knows you're coming.</h1>
+    <p>Browse today's menu, send your order straight to the kitchen, and track every dish from ticket to table — no app, no waiting for a waiter.</p>
+    <div class="hero-meta" id="heroMeta">
+      <span>Open <strong id="heroHours">11:00 – 23:00</strong></span>
+      <span id="heroAddressWrap">📍 <span id="heroAddress">—</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORY RAIL ============ -->
+<nav class="cat-rail" id="catRail" aria-label="Menu categories">
+  <div class="wrap" id="catRailInner"></div>
+</nav>
+
+<!-- ============ MENU ============ -->
+<main class="menu-section">
+  <div class="wrap">
+    <div class="section-heading">
+      <h2>Our Menu</h2>
+      <span class="n" id="dishCountLabel"></span>
+    </div>
+    <div id="menuContainer">
+      <div class="empty-state"><div class="glyph">🍽️</div>Loading today's menu…</div>
+    </div>
+  </div>
+</main>
+
+<!-- ============ ORDER TRACKING (hidden until an order exists) ============ -->
+<section class="tracking-section no-print" id="trackingSection" style="display:none;">
+  <div class="wrap">
+    <div class="section-heading"><h2>Your order</h2></div>
+
+    <div class="ticket" id="trackingTicket">
+      <div class="ticket-head">
+        <div>
+          <div class="label">Order</div>
+          <div class="order-no" id="trackOrderNo">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="label">Status</div>
+          <div class="order-no" id="trackStatusLabel">—</div>
+        </div>
+      </div>
+
+      <div class="stepper-track" id="stepperTrack" style="padding:20px 20px 4px;">
+        <div class="step" data-step="pending"><div class="dot">1</div><div class="lbl">Received</div></div>
+        <div class="step" data-step="preparing"><div class="dot">2</div><div class="lbl">Preparing</div></div>
+        <div class="step" data-step="ready"><div class="dot">3</div><div class="lbl">Ready</div></div>
+        <div class="step" data-step="delivered"><div class="dot">4</div><div class="lbl">Delivered</div></div>
+        <div class="step" data-step="completed"><div class="dot">✓</div><div class="lbl">Confirmed</div></div>
+      </div>
+
+      <div class="accept-box" id="acceptBox" style="display:none;">
+        <p>Your order has arrived at the table. Confirm receipt to get your invoice.</p>
+        <button class="btn-primary" id="acceptDeliveryBtn" style="max-width:280px; margin:0 auto;">Accept &amp; get invoice</button>
+      </div>
+
+      <div id="invoiceBox" style="display:none;">
+        <div style="padding:16px 20px 0;">
+          <span class="invoice-badge">✓ Invoice <span id="invoiceNumber"></span></span>
+        </div>
+        <div id="invoiceLines"></div>
+        <div class="ticket-totals" id="invoiceTotals"></div>
+        <div style="padding:0 20px 20px; display:flex; gap:10px;">
+          <button class="btn-secondary" id="printInvoiceBtn" style="margin-top:0;">🖨️ Print invoice</button>
+          <button class="btn-secondary" id="newOrderBtn" style="margin-top:0;">Start a new order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Marath</div>
+        <p class="footer-info" id="footerInfo">
+          — <br>
+          Open — <br>
+        </p>
+      </div>
+      <div>
+        <div class="footer-info" style="margin-bottom:10px;">Follow the kitchen</div>
+        <div class="social-row" id="socialRow"><!-- filled by app.js --></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Marath. All rights reserved.</span>
+      <span>Digital menu built for table-side ordering</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="overlay no-print" id="overlay"></div>
+<aside class="drawer no-print" id="cartDrawer" aria-label="Cart">
+  <div class="drawer-head">
+    <h3>Your ticket</h3>
+    <button class="icon-btn" id="closeCartBtn" aria-label="Close cart">✕</button>
+  </div>
+  <div class="drawer-body" id="cartBody">
+    <div class="empty-state"><div class="glyph">🧺</div>Your basket is empty.<br>Add a dish to get started.</div>
+  </div>
+  <div class="drawer-foot" id="cartFoot" style="display:none;">
+    <div class="ticket-totals" style="padding:0 0 14px; border-top:none;">
+      <div class="row"><span>Subtotal</span><span class="val" id="sumSubtotal">0.00</span></div>
+      <div class="row"><span id="sumTaxLabel">Tax</span><span class="val" id="sumTax">0.00</span></div>
+      <div class="row total"><span>Total</span><span class="val" id="sumTotal">0.00</span></div>
+    </div>
+    <div class="field"><label for="custName">Name</label><input id="custName" placeholder="Your name" autocomplete="name"></div>
+    <div class="field"><label for="custPhone">Phone</label><input id="custPhone" placeholder="For order updates" autocomplete="tel"></div>
+    <div class="field"><label for="tableNo">Table number</label><input id="tableNo" placeholder="e.g. 12"></div>
+    <div class="field"><label for="custNotes">Notes (optional)</label><textarea id="custNotes" placeholder="Allergies, spice level, anything else"></textarea></div>
+    <button class="btn-primary" id="placeOrderBtn">Place order</button>
+  </div>
+</aside>
+
+<div class="mobile-cart-bar no-print" id="mobileCartBar">
+  <div class="l"><span class="n" id="mobileCartCount">0</span> items in basket</div>
+  <div class="r" id="mobileCartTotal">0.00</div>
+</div>
+
+<div class="toast no-print" id="toast"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

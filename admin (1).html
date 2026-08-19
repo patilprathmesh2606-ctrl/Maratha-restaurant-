@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marath — Staff Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="brand-mark">M</div>
+    <h1>Staff sign in</h1>
+    <p class="sub">Marath kitchen &amp; manager dashboard</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username"></div>
+    <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+    <button class="btn btn-olive" id="loginBtn" style="width:100%; padding:12px;">Sign in</button>
+    <p class="sub" style="margin-top:16px;">Accounts are created by a manager in the Supabase dashboard — see README.</p>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div class="admin-shell" id="adminShell">
+  <aside class="sidebar">
+    <div class="brand-name">Marath</div>
+    <div class="sidebar-user">
+      <span id="staffName">—</span>
+      <div class="role-tag" id="staffRole">—</div>
+    </div>
+    <button class="nav-item active" data-view="orders">📋 Orders</button>
+    <button class="nav-item" data-view="menu" id="navMenu">🍽️ Menu</button>
+    <button class="nav-item" data-view="reports" id="navReports">📊 Reports</button>
+    <button class="nav-item" data-view="settings" id="navSettings">⚙️ Settings</button>
+    <div class="spacer"></div>
+    <button class="logout-btn" id="logoutBtn">Sign out</button>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- ---------- ORDERS ---------- -->
+    <section class="admin-view active" id="view-orders">
+      <div class="view-head">
+        <div>
+          <h1>Live orders</h1>
+          <p>New orders arrive automatically — no refresh needed.</p>
+        </div>
+      </div>
+      <div class="kanban" id="kanban">
+        <div class="kanban-col" data-status="pending"><h4>Pending <span id="count-pending">0</span></h4><div class="col-body" id="col-pending"></div></div>
+        <div class="kanban-col" data-status="preparing"><h4>Preparing <span id="count-preparing">0</span></h4><div class="col-body" id="col-preparing"></div></div>
+        <div class="kanban-col" data-status="ready"><h4>Ready <span id="count-ready">0</span></h4><div class="col-body" id="col-ready"></div></div>
+        <div class="kanban-col" data-status="delivered"><h4>Delivered <span id="count-delivered">0</span></h4><div class="col-body" id="col-delivered"></div></div>
+        <div class="kanban-col" data-status="completed"><h4>Completed <span id="count-completed">0</span></h4><div class="col-body" id="col-completed"></div></div>
+      </div>
+    </section>
+
+    <!-- ---------- MENU (manager only) ---------- -->
+    <section class="admin-view" id="view-menu">
+      <div class="view-head">
+        <div><h1>Menu management</h1><p>Add, edit, remove dishes and categories.</p></div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-ghost" id="addCategoryBtn">+ Category</button>
+          <button class="btn btn-marigold" id="addDishBtn">+ Add dish</button>
+        </div>
+      </div>
+      <div class="cat-manager" id="catManager"></div>
+      <div class="admin-dish-grid" id="adminDishGrid"></div>
+    </section>
+
+    <!-- ---------- REPORTS (manager only) ---------- -->
+    <section class="admin-view" id="view-reports">
+      <div class="view-head"><div><h1>Daily report</h1><p>Income, tax payable and order counts for the selected day.</p></div></div>
+      <div class="date-filter">
+        <label for="reportDate">Date</label>
+        <input type="date" id="reportDate">
+        <button class="btn btn-ghost btn-sm" id="reportTodayBtn">Today</button>
+      </div>
+      <div class="stat-grid">
+        <div class="card stat-card"><div class="lbl">Orders completed</div><div class="val" id="statOrders">0</div></div>
+        <div class="card stat-card"><div class="lbl">Gross subtotal</div><div class="val" id="statSubtotal">0.00</div></div>
+        <div class="card stat-card accent"><div class="lbl">Tax payable</div><div class="val" id="statTax">0.00</div></div>
+        <div class="card stat-card accent"><div class="lbl">Total income</div><div class="val" id="statTotal">0.00</div></div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead style="background:var(--ivory);">
+            <tr>
+              <th style="text-align:left; padding:10px 16px;">Invoice</th>
+              <th style="text-align:left; padding:10px 16px;">Customer</th>
+              <th style="text-align:right; padding:10px 16px;">Subtotal</th>
+              <th style="text-align:right; padding:10px 16px;">Tax</th>
+              <th style="text-align:right; padding:10px 16px;">Total</th>
+              <th style="text-align:right; padding:10px 16px;">Time</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- SETTINGS (manager only) ---------- -->
+    <section class="admin-view" id="view-settings">
+      <div class="view-head"><div><h1>Restaurant settings</h1><p>Tax rate, contact info and social links shown on the public menu.</p></div></div>
+      <div class="card" style="padding:22px; max-width:560px;">
+        <div class="field-row">
+          <div class="field"><label>Restaurant name</label><input id="setName"></div>
+          <div class="field"><label>Tax rate (%)</label><input id="setTax" type="number" step="0.01"></div>
+        </div>
+        <div class="field"><label>Tagline</label><input id="setTagline"></div>
+        <div class="field-row">
+          <div class="field"><label>Opens at</label><input id="setOpen"></div>
+          <div class="field"><label>Closes at</label><input id="setClose"></div>
+        </div>
+        <div class="field"><label>Address</label><input id="setAddress"></div>
+        <div class="field"><label>Phone</label><input id="setPhone"></div>
+        <div class="field-row">
+          <div class="field"><label>Instagram URL</label><input id="setInstagram"></div>
+          <div class="field"><label>Facebook URL</label><input id="setFacebook"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>WhatsApp URL</label><input id="setWhatsapp"></div>
+          <div class="field"><label>Twitter / X URL</label><input id="setTwitter"></div>
+        </div>
+        <div class="field"><label>YouTube URL</label><input id="setYoutube"></div>
+        <button class="btn btn-olive" id="saveSettingsBtn">Save settings</button>
+        <span id="settingsSaved" style="font-size:12px; color:#3c5a2c; margin-left:10px; display:none;">Saved ✓</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ DISH MODAL ============ -->
+<div class="modal-overlay" id="dishModalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="dishModalTitle">Add dish</h3><button class="icon-btn" id="dishModalClose">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="dishId">
+      <div class="field"><label>Name</label><input id="dishName"></div>
+      <div class="field"><label>Category</label><select id="dishCategory"></select></div>
+      <div class="field"><label>Description</label><textarea id="dishDescription" rows="2"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Price</label><input id="dishPrice" type="number" step="0.01"></div>
+        <div class="field"><label>Available</label>
+          <select id="dishAvailable"><option value="true">Yes</option><option value="false">No</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Photo</label><input id="dishPhotoFile" type="file" accept="image/*"></div>
+      <div id="dishPhotoPreviewWrap" style="display:none; margin-top:6px;"><img id="dishPhotoPreview" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="dishModalCancel" style="flex:1;">Cancel</button>
+      <button class="btn btn-marigold" id="dishModalSave" style="flex:1;">Save dish</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
